@@ -4,17 +4,39 @@ import com.consol.citrus.annotations.CitrusTest;
 import com.consol.citrus.context.TestContext;
 import com.consol.citrus.message.builder.ObjectMappingPayloadBuilder;
 import com.consol.citrus.testng.TestNGCitrusSupport;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 import pojo.UserDTO;
 import pojo.UserOutDTO;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.consol.citrus.http.actions.HttpActionBuilder.http;
 
 public class UsersTests extends TestNGCitrusSupport {
     private TestContext context;
 
+    @BeforeSuite
+    void setupTest() throws MalformedURLException {
+        Map<String, Object> selenoidOptions = new HashMap<>();
+        selenoidOptions.put("enableVNC", true);
+        selenoidOptions.put("enableVideo", false);
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("browserName", "chrome");
+        capabilities.setCapability("browserVersion", "109.0");
+        capabilities.setCapability("selenoid:options", selenoidOptions);
+        RemoteWebDriver driver = new RemoteWebDriver(
+                URI.create("http://127.0.0.1:4444/wd/hub").toURL(),
+                capabilities
+        );
+    }
 
     @Test(description = "Create user")
     @CitrusTest
